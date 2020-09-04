@@ -5,6 +5,7 @@ This notebook does some exploration into pedometer data over the last 2 years ex
 
 ## Time_Series_XML
 This notebook pulls in the exported health data in xml form into a notebook.  
+We need to validate the data between the two data sets
 
 ### Next Steps:
     - Reshaping xml df to have hourly walking numbers
