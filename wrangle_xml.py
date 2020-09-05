@@ -72,11 +72,12 @@ def validate_data_sets():
         
     root[137028].attrib
     
+    j = []
     i = 0
     type_list = []
     while i < 1_000_000:
         if root[i].attrib['type'] in type_list:
-
+            j.append(i)
         else:
             type_list.append(root[i].attrib['type'])
         i +=1
