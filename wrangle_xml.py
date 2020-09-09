@@ -31,6 +31,7 @@ def wrangle_xml():
     return df
 
 def validate_data_sets():
+    """looking into the xml data frame"""
     df = pd.DataFrame(root[4].attrib, index=[0])
     
     print(root[5].attrib['type'])
