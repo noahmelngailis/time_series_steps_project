@@ -7,17 +7,26 @@ import os.path
 import xml.etree.ElementTree as etree
 
 def build_df():
+    """this function creates an empty dataframe and then builds a dataframe
+    from every relevant row in the xml file and then saves as csv"""
+
+    """ This function takes a very long time to run, see `wrangle_xml()` function
+    which checks to see if there is a csv before running this function """
     df = pd.DataFrame()
     for i in range(4,137028):
         dict_new = root[i].attrib
         df = df.append(dict_new, ignore_index=True)
+
     return df    
 
 def wrangle_xml():
-    
+    """ this function checks to see if there is an existing csv
+    if not runs build_df function""" 
+
     if os.path.isfile('./xml.csv'):
         df = pd.read_csv('xml.csv')
-    
+
+        df = df.drop(columns="Unnamed: 0")
     else:
    
         tree = etree.parse("export.xml")
@@ -86,3 +95,21 @@ def validate_data_sets():
     type_list
     
     return type_list
+
+def preprocessing_xml(df):
+    
+    # remove timezone from the column
+    df['endDate'] = df.endDate.str.replace("-0500", "")
+    df['startDate'] = df.startDate.str.replace("-0500", "")
+    df['creationDate'] = df.creationDate.str.replace("-0500", "")
+    
+    # change the column into datetime
+    df['endDate'] = pd.to_datetime(df.endDate)
+    df['startDate'] = pd.to_datetime(df.startDate)
+    df['creationDate'] = pd.to_datetime(df.creationDate) 
+    
+    
+    # set index as creation date
+    df = df.set_index('startDate')
+    
+    return df
