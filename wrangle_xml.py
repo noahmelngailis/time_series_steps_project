@@ -97,6 +97,7 @@ def validate_data_sets():
     return type_list
 
 def preprocessing_xml(df):
+    """ function for processing dataframe into datetime format """
     
     # remove timezone from the column
     df['endDate'] = df.endDate.str.replace("-0500", "")
