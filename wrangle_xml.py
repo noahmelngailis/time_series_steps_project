@@ -114,3 +114,48 @@ def preprocessing_xml(df):
     df = df.set_index('startDate')
     
     return df
+
+
+def make_df_by_resample(df, column):
+    """Makes a resampled by day series for each of the date columns in xml df"""
+    series = df.set_index(column).resample("D").value.sum()
+    return series
+
+
+def create_validate_xml_df():
+    """This function will create a df to validate the three datetime columns from xml file as compared to the export.csv 
+    from the pedometer application"""
+
+    ### read in xml data
+    df = wrangle_xml()
+    
+    ### segment xml data for steps only into new df
+    df_steps = df[df.type == 'HKQuantityTypeIdentifierStepCount']
+    
+    ### preprocess df_steps
+    df_steps = preprocessing_xml(df_steps)
+    
+    ### reset index on df_steps
+    df_steps.reset_index(inplace=True)
+    
+    ### create `creationDate`, `startDate` and `endDate` resample series for merge
+    create = make_df_by_resample(df_steps, "creationDate")
+    end =  make_df_by_resample(df_steps, "endDate")
+    start =  make_df_by_resample(df_steps, "startDate")
+    
+    ### create validate df from pedometer csv file
+    df_validate = pd.read_csv("Export.csv")
+    
+    ### set datetime index for df_validate
+    df_validate['Date'] = pd.to_datetime(df_validate.Date)
+    
+    ### merge all series with validate df
+    df_validate = (df_validate.merge(start, left_on='Date', right_on='startDate')
+    .rename(columns={"value": 'start_value'})
+    .merge(create, left_on='Date', right_on='creationDate')
+    .rename(columns={"value": 'create_value'})
+    .merge(end, left_on='Date', right_on='endDate')
+    .rename(columns={"value": 'end_value'})
+    )
+    
+    return df_validate
