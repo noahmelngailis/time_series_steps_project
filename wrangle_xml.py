@@ -113,6 +113,9 @@ def preprocessing_xml(df):
     # set index as creation date
     df = df.set_index('startDate')
     
+    #reset index
+    df = df.reset_index()
+    
     return df
 
 
