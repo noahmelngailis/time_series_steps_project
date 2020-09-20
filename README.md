@@ -7,6 +7,9 @@ This notebook does some exploration into pedometer data over the last 2 years ex
 This notebook pulls in the exported health data in xml form into a notebook.  
 We need to validate the data between the two data sets
 
+This project has hit a snag because there is an issue with time calculations between 9-27-2018 and 11-12-2018
+
+
 ### Next Steps:
     - Reshaping xml df to have hourly walking numbers
     - EDA of that dataframe
