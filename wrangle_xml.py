@@ -162,3 +162,45 @@ def create_validate_xml_df():
     )
     
     return df_validate
+
+def create_hourly_df(df): 
+    """create df for steps per hour that will have 0 steps for non movement hours and will then fix bad data"""
+    
+    # filter by step count
+    df_steps = df[df.type == 'HKQuantityTypeIdentifierStepCount']
+    
+    # resample df into hourly
+    hourly = pd.DataFrame(df_steps.resample("h").value.sum())
+    
+    return hourly
+
+def create_every_hour():
+    """takes in a dataframe and returns a dataframe with every hour accounted for"""
+    
+    # create a series with every hour within the date range
+    date_index = pd.date_range(start='2016-06-04 00:00:00', end='2020-08-14 00:00:00', freq='h')
+    
+    # turn the date range into a data frame
+    date_index = pd.DataFrame(date_index)
+    
+    # make an extra column for df
+    date_index['zero_column'] = 0
+    
+    # rename columns to make better looking df
+    date_index = date_index.rename(columns={0:'date'})
+    
+    # set index
+    date_index.set_index('date', inplace=True)
+    
+    # create hourly df
+    hourly = create_hourly_steps(df)
+    
+    # join hourly df to create df with zeros for hours with no activity
+    date_index = date_index.join(hourly)
+    
+    #set hourly df
+    hourly = date_index
+    
+    hourly.drop(columns=('zero_column'), inplace=True)
+    
+    return hourly
